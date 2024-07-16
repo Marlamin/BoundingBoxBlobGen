@@ -51,6 +51,7 @@ namespace BoundingBoxBlobGen
             {
                 var splitLine = line.ToLowerInvariant().Split(";");
                 var fileDataID = uint.Parse(splitLine[0]);
+                var filename = splitLine[1].ToLowerInvariant();
 
                 if (filesDone > 0 && filesDone % 1000 == 0 && filesDone != lastReport)
                 {
@@ -58,11 +59,14 @@ namespace BoundingBoxBlobGen
                     lastReport = filesDone;
                 }
 
+                if(!cascHandler.FileExists((int)fileDataID))
+                    continue;
+
                 try
                 {
-                    if (splitLine[1].EndsWith(".wmo"))
+                    if (filename.EndsWith(".wmo"))
                     {
-                        if (Regex.IsMatch(splitLine[1], @"_\d{3}.wmo") || Regex.IsMatch(splitLine[1], @"_\d{3}_lod\d{1}.wmo"))
+                        if (Regex.IsMatch(filename, @"_\d{3}.wmo") || Regex.IsMatch(filename, @"_\d{3}_lod\d{1}.wmo"))
                         {
                             continue;
                         }
@@ -86,7 +90,7 @@ namespace BoundingBoxBlobGen
                         boundingBoxBlobDict.Add(fileDataID, boundingBox);
                         filesDone++;
                     }
-                    else if (splitLine[1].EndsWith(".m2"))
+                    else if (filename.EndsWith(".m2"))
                     {
                         //Console.WriteLine("[M2] Loading " + line);
                         var m2Reader = new M2Reader();
